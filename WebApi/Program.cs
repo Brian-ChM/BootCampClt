@@ -2,8 +2,6 @@ using Infraestructura;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var DBConnection = builder.Configuration.GetConnectionString("connection");
-
 // Add services to the container.
 
 builder.Services.AddControllers();

@@ -16,7 +16,8 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddDatabase(this IServiceCollection services,
+    public static IServiceCollection AddDatabase
+        (this IServiceCollection services,
         IConfiguration configuration)
     {
         var connectionStrings = configuration.GetConnectionString("connection");
