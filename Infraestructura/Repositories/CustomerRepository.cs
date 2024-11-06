@@ -6,8 +6,8 @@ namespace Infraestructura.Repositories;
 public class CustomerRepository : ICustomerRepository
 {
     private static List<Customer> _customers = [
-        new() { Id = 1, Name = "Brian" },
-        new() { Id = 2, Name = "Fernando" },
+        new() { Id = 1, FirstName = "Brian" },
+        new() { Id = 2, FirstName = "Fernando" },
         ];
 
     public List<Customer> List()
@@ -38,7 +38,7 @@ public class CustomerRepository : ICustomerRepository
             throw new Exception("El customer no pudo ser actualizado.");
 
         updateCustomer.Id = customer.Id;
-        updateCustomer.Name = customer.Name;
+        updateCustomer.FirstName = customer.FirstName;
 
         return updateCustomer;
     }
