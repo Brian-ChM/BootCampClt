@@ -1,12 +1,13 @@
-﻿using Core.Entities;
+﻿using Core.DTOs;
+using Core.Entities;
 
 namespace Core.Interfaces.Repositories;
 
 public interface ICustomerRepository
 {
-    List<Customer> List();
-    Customer GetById(int Id);
-    Customer AddCustomer(Customer customer);
-    Customer UpdateCustomer(int Id, Customer customer);
-    void DeleteCustomer(int Id);
+    Task<List<CustomerDTO>> List();
+    Task<CustomerDTO> GetById(int Id);
+    Task<CustomerDTO> AddCustomer(string firstName, string lastName);
+    Task<CustomerDTO> UpdateCustomer(int Id, string firstName, string lastName);
+    Task<CustomerDTO> DeleteCustomer(int Id);
 }

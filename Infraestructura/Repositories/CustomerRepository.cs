@@ -1,54 +1,83 @@
-﻿using Core.Entities;
+﻿using Core.DTOs;
+using Core.Entities;
 using Core.Interfaces.Repositories;
+using Infraestructura.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructura.Repositories;
 
 public class CustomerRepository : ICustomerRepository
 {
-    private static List<Customer> _customers = [
-        new() { Id = 1, FirstName = "Brian" },
-        new() { Id = 2, FirstName = "Fernando" },
-        ];
+    private readonly ApplicationDbContext _context;
 
-    public List<Customer> List()
+    public CustomerRepository(ApplicationDbContext context)
     {
-        return _customers;
+        _context = context;
     }
 
-    public Customer GetById(int Id)
+    public CustomerDTO CreateDto(Customer customer) => new()
     {
-        var customer = _customers.SingleOrDefault(c => c.Id.Equals(Id));
-        if (customer is null)
-            customer = new Customer();
+        Id = customer.Id,
+        FullName = $"{customer.FirstName} {customer.LastName}"
+    };
 
-        return customer;
+    public async Task<List<CustomerDTO>> List()
+    {
+        var entities = await _context.Customers.ToListAsync();
+        var dtos = entities.Select(customer => CreateDto(customer));
+
+        return dtos.OrderBy(c => c.Id).ToList();
     }
 
-    public Customer AddCustomer(Customer customer)
+    public async Task<CustomerDTO> GetById(int Id)
     {
-        _customers.Add(customer);
-        return customer;
+        var entity = await _context.Customers.FirstOrDefaultAsync(c => c.Id.Equals(Id));
+
+        if (entity is null)
+            throw new Exception("Customer no encontrado");
+
+        return CreateDto(entity);
     }
 
-    public Customer UpdateCustomer(int Id, Customer customer)
+    public async Task<CustomerDTO> AddCustomer(string firstName, string lastName)
     {
-        var updateCustomer = _customers.SingleOrDefault(c => c.Id.Equals(Id));
+        var entity = new Customer
+        {
+            FirstName = firstName,
+            LastName = lastName
+        };
 
-        if (updateCustomer is null)
-            throw new Exception("El customer no pudo ser actualizado.");
+        _context.Customers.Add(entity);
+        await _context.SaveChangesAsync();
 
-        updateCustomer.Id = customer.Id;
-        updateCustomer.FirstName = customer.FirstName;
-
-        return updateCustomer;
+        return CreateDto(entity);
     }
 
-    public void DeleteCustomer(int Id)
+    public async Task<CustomerDTO> UpdateCustomer(int Id, string firstName, string lastName)
     {
-        var deleteCustomer = _customers.SingleOrDefault(c => c.Id.Equals(Id));
-        if (deleteCustomer is null)
-            throw new Exception("El customer no pudo ser eliminado.");
+        var entity = await _context.Customers.FirstOrDefaultAsync(x => x.Id.Equals(Id));
 
-        _customers.Remove(deleteCustomer);
+        if (entity is null)
+            throw new Exception("Customer no encontrado");
+
+        entity.FirstName = firstName;
+        entity.LastName = lastName;
+
+        await _context.SaveChangesAsync();
+
+        return CreateDto(entity);
+    }
+
+    public async Task<CustomerDTO> DeleteCustomer(int Id)
+    {
+        var entity = await _context.Customers.FirstOrDefaultAsync(c => c.Id.Equals(Id));
+
+        if (entity is null)
+            throw new Exception("Customer no encontrado");
+
+        _context.Customers.Remove(entity);
+        await _context.SaveChangesAsync();
+
+        return CreateDto(entity);
     }
 }

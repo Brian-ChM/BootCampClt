@@ -6,7 +6,7 @@ namespace Infraestructura.Context;
 
 public partial class ApplicationDbContext : DbContext
 {
-    public DbSet<Customer>? customers { get; set; }
+    public DbSet<Customer> Customers { get; set; }
 
     public ApplicationDbContext() { }
     
@@ -18,7 +18,4 @@ public partial class ApplicationDbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-    // dotnet ef migrations add InitialMigration -p Infraestructura -s WebApi
-
 }
