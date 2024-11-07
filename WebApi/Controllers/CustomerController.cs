@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
+using Core.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -15,9 +16,9 @@ public class CustomerController : BaseApiController
 
     // Obtener todos
     [HttpGet("list")]
-    public async Task<IActionResult> List()
+    public async Task<IActionResult> List([FromQuery] PaginationRequest request)
     {
-        return Ok(await _customerRepository.List());
+        return Ok(await _customerRepository.List(request));
     }
 
     // Obtener por Id
