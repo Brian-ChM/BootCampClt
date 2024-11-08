@@ -2,13 +2,14 @@
 using Core.Entities;
 using Core.Request;
 
+
 namespace Core.Interfaces.Repositories;
 
 public interface ICustomerRepository
 {
-    Task<List<CustomerDTO>> List(PaginationRequest request);
+    Task<List<CustomerDTO>> List(PaginationRequest request, CancellationToken cancellationToken);
     Task<CustomerDTO> GetById(int Id);
-    Task<CustomerDTO> AddCustomer(string firstName, string lastName);
-    Task<CustomerDTO> UpdateCustomer(int Id, string firstName, string lastName);
+    Task<CustomerDTO> AddCustomer(CreateCustomerDTO CreateCustomer);
+    Task<CustomerDTO> UpdateCustomer(UpdateCustomerDTO UpdateCustomer);
     Task<CustomerDTO> DeleteCustomer(int Id);
 }

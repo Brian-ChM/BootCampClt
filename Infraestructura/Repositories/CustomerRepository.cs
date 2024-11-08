@@ -2,9 +2,10 @@
 using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Request;
+using FluentValidation;
 using Infraestructura.Context;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using System;
 
 namespace Infraestructura.Repositories;
 
@@ -12,20 +13,20 @@ public class CustomerRepository : ICustomerRepository
 {
     private readonly ApplicationDbContext _context;
 
-    public CustomerRepository(ApplicationDbContext context)
+    public CustomerRepository(ApplicationDbContext context, IValidator<CreateCustomerDTO> createValidator)
     {
         _context = context;
     }
 
-    public async Task<List<CustomerDTO>> List(PaginationRequest request)
+    public async Task<List<CustomerDTO>> List(PaginationRequest request, CancellationToken cancellationToken)
     {
-        var entities = await _context.Customers.ToListAsync();
-        var dtos = entities
+        var entities = await _context.Customers
             .Skip((request.Page - 1) * request.Size)
             .Take(request.Size)
-            .Select(customer => CreateDto(customer));
+            .Select(c => CreateDto(c))
+            .ToListAsync(cancellationToken);
 
-        return dtos.OrderBy(c => c.Id).ToList();
+        return entities;
     }
 
     public async Task<CustomerDTO> GetById(int Id)
@@ -35,12 +36,15 @@ public class CustomerRepository : ICustomerRepository
         return CreateDto(entity);
     }
 
-    public async Task<CustomerDTO> AddCustomer(string firstName, string lastName)
+    public async Task<CustomerDTO> AddCustomer(CreateCustomerDTO CreateCustomer)
     {
         var entity = new Customer
         {
-            FirstName = firstName,
-            LastName = lastName
+            FirstName = CreateCustomer.FirstName,
+            LastName = CreateCustomer.LastName,
+            Email = CreateCustomer.Email,
+            Phone = CreateCustomer.Phone,
+            FechaDeNac = CreateCustomer.FechaDeNac,
         };
 
         _context.Customers.Add(entity);
@@ -49,15 +53,17 @@ public class CustomerRepository : ICustomerRepository
         return CreateDto(entity);
     }
 
-    public async Task<CustomerDTO> UpdateCustomer(int Id, string firstName, string lastName)
+    public async Task<CustomerDTO> UpdateCustomer(UpdateCustomerDTO UpdateCustomer)
     {
-        var entity = await VerifyExists(Id);
+        var entity = await VerifyExists(UpdateCustomer.Id);
 
-        entity.FirstName = firstName;
-        entity.LastName = lastName;
+        entity.FirstName = UpdateCustomer.FirstName;
+        entity.LastName = UpdateCustomer.LastName;
+        entity.Email = UpdateCustomer.Email;
+        entity.Phone = UpdateCustomer.Phone;
+        entity.FechaDeNac = UpdateCustomer.FechaDeNac;
 
         await _context.SaveChangesAsync();
-
         return CreateDto(entity);
     }
 
@@ -71,13 +77,13 @@ public class CustomerRepository : ICustomerRepository
         return CreateDto(entity);
     }
 
-    private CustomerDTO CreateDto(Customer customer) => new()
+    private static CustomerDTO CreateDto(Customer customer) => new()
     {
         Id = customer.Id,
         FullName = $"{customer.FirstName} {customer.LastName}",
         Phone = customer.Phone,
         Email = customer.Email,
-        FechaDeNac = customer.FechaDeNac.ToShortTimeString(),
+        FechaDeNac = customer.FechaDeNac.ToShortDateString(),
     };
 
     private async Task<Customer> VerifyExists(int id)

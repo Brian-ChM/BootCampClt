@@ -4,6 +4,9 @@ using Infraestructura.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using Core.DTOs;
+using WebApi.Validation;
 
 namespace Infraestructura;
 
@@ -26,6 +29,12 @@ public static class DependencyInjection
             options.UseNpgsql(connectionStrings);
         });
 
+        return services;
+    }
+
+    public static IServiceCollection AddValidation(this IServiceCollection services)
+    {
+        services.AddScoped<IValidator<CreateCustomerDTO>, CreateValidation>();
         return services;
     }
 }

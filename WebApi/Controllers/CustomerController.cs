@@ -1,6 +1,8 @@
-﻿using Core.Entities;
+﻿using Core.DTOs;
+using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Request;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -8,17 +10,19 @@ namespace WebApi.Controllers;
 public class CustomerController : BaseApiController
 {
     private readonly ICustomerRepository _customerRepository;
+    private readonly IValidator<CreateCustomerDTO> _validateCreate;
 
-    public CustomerController(ICustomerRepository customerRepository)
+    public CustomerController(ICustomerRepository customerRepository, IValidator<CreateCustomerDTO> validateCreate)
     {
         _customerRepository = customerRepository;
+        _validateCreate = validateCreate;
     }
 
     // Obtener todos
     [HttpGet("list")]
-    public async Task<IActionResult> List([FromQuery] PaginationRequest request)
+    public async Task<IActionResult> List([FromQuery] PaginationRequest request, CancellationToken cancellationToken)
     {
-        return Ok(await _customerRepository.List(request));
+        return Ok(await _customerRepository.List(request, cancellationToken));
     }
 
     // Obtener por Id
@@ -30,20 +34,23 @@ public class CustomerController : BaseApiController
     }
 
     [HttpPost("agregar")]
-    public async Task<IActionResult> Add([FromBody] Customer customer)
+    public async Task<IActionResult> Add([FromBody] CreateCustomerDTO CreateCustomer)
     {
-        return Ok(await _customerRepository.AddCustomer(customer.FirstName, customer.LastName));
+        var results = await _validateCreate.ValidateAsync(CreateCustomer);
+
+        if (!results.IsValid)
+            return BadRequest(results.Errors);
+
+        return Ok(await _customerRepository.AddCustomer(CreateCustomer));
     }
 
     // Actualizar
     [HttpPut("actualizar")]
-    public async Task<IActionResult> Update([FromBody] Customer customer)
+    public async Task<IActionResult> Update([FromBody] UpdateCustomerDTO UpdateCustomer)
     {
         try
         {
-            var updateCustomer = await _customerRepository
-                .UpdateCustomer(customer.Id, customer.FirstName, customer.LastName);
-
+            var updateCustomer = await _customerRepository.UpdateCustomer(UpdateCustomer);
             return Ok(updateCustomer);
         }
         catch (Exception ex)
