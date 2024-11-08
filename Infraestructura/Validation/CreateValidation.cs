@@ -10,7 +10,8 @@ public class CreateValidation : AbstractValidator<CreateCustomerDTO>
         RuleFor(x => x.FirstName).Length(3, 50);
         RuleFor(x => x.LastName).Length(3, 50);
         RuleFor(x => x.Email).NotEmpty().EmailAddress();
-        RuleFor(x => x.Phone).Length(10, 15).Matches(@"^\d+$");
+        RuleFor(x => x.Phone).Length(10, 15).Matches(@"^\d+$")
+            .WithMessage("El teléfono solo debe contener dígitos.");
         RuleFor(x => x.FechaDeNac).NotEmpty();
     }
 }
