@@ -11,11 +11,13 @@ public class CustomerController : BaseApiController
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly IValidator<CreateCustomerDTO> _validateCreate;
+    private readonly IValidator<UpdateCustomerDTO> _validateUpdate;
 
-    public CustomerController(ICustomerRepository customerRepository, IValidator<CreateCustomerDTO> validateCreate)
+    public CustomerController(ICustomerRepository customerRepository, IValidator<CreateCustomerDTO> validateCreate, IValidator<UpdateCustomerDTO> validateUpdate)
     {
         _customerRepository = customerRepository;
         _validateCreate = validateCreate;
+        _validateUpdate = validateUpdate;
     }
 
     // Obtener todos
@@ -48,6 +50,11 @@ public class CustomerController : BaseApiController
     [HttpPut("actualizar")]
     public async Task<IActionResult> Update([FromBody] UpdateCustomerDTO UpdateCustomer)
     {
+        var results = await _validateUpdate.ValidateAsync(UpdateCustomer);
+
+        if (!results.IsValid)
+            return BadRequest(results.Errors);
+
         try
         {
             var updateCustomer = await _customerRepository.UpdateCustomer(UpdateCustomer);

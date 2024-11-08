@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using Core.DTOs;
 using WebApi.Validation;
+using Infraestructura.Validation;
 
 namespace Infraestructura;
 
@@ -35,6 +36,7 @@ public static class DependencyInjection
     public static IServiceCollection AddValidation(this IServiceCollection services)
     {
         services.AddScoped<IValidator<CreateCustomerDTO>, CreateValidation>();
+        services.AddScoped<IValidator<UpdateCustomerDTO>, UpdateValidation>();
         return services;
     }
 }
