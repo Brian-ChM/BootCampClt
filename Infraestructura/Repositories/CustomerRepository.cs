@@ -62,6 +62,8 @@ public class CustomerRepository : ICustomerRepository
         entity.Phone = UpdateCustomer.Phone;
         entity.FechaDeNac = UpdateCustomer.FechaDeNac;
 
+        UpdateCustomer.Adapt<CustomerDTO>();
+
         await _context.SaveChangesAsync();
         return entity.Adapt<CustomerDTO>();
     }
