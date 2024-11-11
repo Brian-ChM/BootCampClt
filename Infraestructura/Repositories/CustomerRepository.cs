@@ -5,7 +5,6 @@ using Core.Request;
 using FluentValidation;
 using Infraestructura.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace Infraestructura.Repositories;
 
@@ -21,9 +20,10 @@ public class CustomerRepository : ICustomerRepository
     public async Task<List<CustomerDTO>> List(PaginationRequest request, CancellationToken cancellationToken)
     {
         var entities = await _context.Customers
+            .Include(c => c.Accounts)
             .Skip((request.Page - 1) * request.Size)
             .Take(request.Size)
-            .Select(c => CreateDto(c))
+            .Select(c => CustomerDto(c))
             .ToListAsync(cancellationToken);
 
         return entities;
@@ -33,7 +33,7 @@ public class CustomerRepository : ICustomerRepository
     {
         var entity = await VerifyExists(Id);
 
-        return CreateDto(entity);
+        return CustomerDto(entity);
     }
 
     public async Task<CustomerDTO> AddCustomer(CreateCustomerDTO CreateCustomer)
@@ -50,7 +50,7 @@ public class CustomerRepository : ICustomerRepository
         _context.Customers.Add(entity);
         await _context.SaveChangesAsync();
 
-        return CreateDto(entity);
+        return CustomerDto(entity);
     }
 
     public async Task<CustomerDTO> UpdateCustomer(UpdateCustomerDTO UpdateCustomer)
@@ -64,7 +64,7 @@ public class CustomerRepository : ICustomerRepository
         entity.FechaDeNac = UpdateCustomer.FechaDeNac;
 
         await _context.SaveChangesAsync();
-        return CreateDto(entity);
+        return CustomerDto(entity);
     }
 
     public async Task<CustomerDTO> DeleteCustomer(int Id)
@@ -74,21 +74,28 @@ public class CustomerRepository : ICustomerRepository
         _context.Customers.Remove(entity);
         await _context.SaveChangesAsync();
 
-        return CreateDto(entity);
+        return CustomerDto(entity);
     }
 
-    private static CustomerDTO CreateDto(Customer customer) => new()
+    private static CustomerDTO CustomerDto(Customer customer) => new()
     {
         Id = customer.Id,
         FullName = $"{customer.FirstName} {customer.LastName}",
         Phone = customer.Phone,
         Email = customer.Email,
         FechaDeNac = customer.FechaDeNac.ToShortDateString(),
+        accounts = customer.Accounts.Select(x => new DetailedCustomerDTO
+        {
+            Id = x.Id,
+            Balance = x.Balance,
+            Number = x.Number,
+            OpeningDate = x.OpeningDate.ToShortDateString()
+        }).ToList()
     };
 
     private async Task<Customer> VerifyExists(int id)
     {
-        return await _context.Customers.FindAsync(id) ??
+        return await _context.Customers.Include(c => c.Accounts).FirstOrDefaultAsync(c => c.Id == id) ??
             throw new Exception("No se encontró con el id solicitado");
     }
 

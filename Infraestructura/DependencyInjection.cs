@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using Core.DTOs;
-using WebApi.Validation;
 using Infraestructura.Validation;
 
 namespace Infraestructura;
@@ -16,6 +15,7 @@ public static class DependencyInjection
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IAccountRepository, AccountRepository>();
 
         return services;
     }
