@@ -4,6 +4,7 @@ using Core.Interfaces.Repositories;
 using Core.Request;
 using FluentValidation;
 using Infraestructura.Context;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructura.Repositories;
@@ -23,17 +24,15 @@ public class CustomerRepository : ICustomerRepository
             .Include(c => c.Accounts)
             .Skip((request.Page - 1) * request.Size)
             .Take(request.Size)
-            .Select(c => CustomerDto(c))
             .ToListAsync(cancellationToken);
 
-        return entities;
+        return entities.Adapt<List<CustomerDTO>>();
     }
 
     public async Task<CustomerDTO> GetById(int Id)
     {
         var entity = await VerifyExists(Id);
-
-        return CustomerDto(entity);
+        return entity.Adapt<CustomerDTO>();
     }
 
     public async Task<CustomerDTO> AddCustomer(CreateCustomerDTO CreateCustomer)
@@ -50,7 +49,7 @@ public class CustomerRepository : ICustomerRepository
         _context.Customers.Add(entity);
         await _context.SaveChangesAsync();
 
-        return CustomerDto(entity);
+        return entity.Adapt<CustomerDTO>(); ;
     }
 
     public async Task<CustomerDTO> UpdateCustomer(UpdateCustomerDTO UpdateCustomer)
@@ -64,7 +63,7 @@ public class CustomerRepository : ICustomerRepository
         entity.FechaDeNac = UpdateCustomer.FechaDeNac;
 
         await _context.SaveChangesAsync();
-        return CustomerDto(entity);
+        return entity.Adapt<CustomerDTO>();
     }
 
     public async Task<CustomerDTO> DeleteCustomer(int Id)
@@ -74,24 +73,8 @@ public class CustomerRepository : ICustomerRepository
         _context.Customers.Remove(entity);
         await _context.SaveChangesAsync();
 
-        return CustomerDto(entity);
+        return entity.Adapt<CustomerDTO>();
     }
-
-    private static CustomerDTO CustomerDto(Customer customer) => new()
-    {
-        Id = customer.Id,
-        FullName = $"{customer.FirstName} {customer.LastName}",
-        Phone = customer.Phone,
-        Email = customer.Email,
-        FechaDeNac = customer.FechaDeNac.ToShortDateString(),
-        accounts = customer.Accounts.Select(x => new DetailedCustomerDTO
-        {
-            Id = x.Id,
-            Balance = x.Balance,
-            Number = x.Number,
-            OpeningDate = x.OpeningDate.ToShortDateString()
-        }).ToList()
-    };
 
     private async Task<Customer> VerifyExists(int id)
     {

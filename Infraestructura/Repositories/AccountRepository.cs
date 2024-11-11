@@ -3,6 +3,7 @@ using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Request;
 using Infraestructura.Context;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -23,33 +24,16 @@ public class AccountRepository : IAccountRepository
             .Include(a => a.Customer)
             .Skip((request.Page - 1) * request.Size)
             .Take(request.Size)
-            .Select(a => AccountDto(a))
             .ToListAsync();
 
-        return entity;
+        return entity.Adapt<List<DetailedAccountDTO>>();
     }
 
     public async Task<DetailedAccountDTO> GetById(int Id)
     {
         var entity = await VerifyExists(Id);
-        return AccountDto(entity);
+        return entity.Adapt<DetailedAccountDTO>();
     }
-
-    private static DetailedAccountDTO AccountDto(Account account) => new DetailedAccountDTO
-    {
-        Id = account.Id,
-        Number = account.Number,
-        Balance = account.Balance,
-        OpeningDate = account.OpeningDate.ToShortDateString(),
-        Customer = new CustomerDTO()
-        {
-            Id = account.Customer.Id,
-            FullName = $"{account.Customer.FirstName} {account.Customer.LastName}",
-            Email = account.Customer.Email,
-            Phone = account.Customer.Phone,
-            FechaDeNac = account.Customer.FechaDeNac.ToShortDateString()
-        }
-    };
 
     private async Task<Account> VerifyExists(int Id)
     {
