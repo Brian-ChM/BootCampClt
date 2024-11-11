@@ -37,33 +37,16 @@ public class CustomerRepository : ICustomerRepository
 
     public async Task<CustomerDTO> AddCustomer(CreateCustomerDTO CreateCustomer)
     {
-        var entity = new Customer
-        {
-            FirstName = CreateCustomer.FirstName,
-            LastName = CreateCustomer.LastName,
-            Email = CreateCustomer.Email,
-            Phone = CreateCustomer.Phone,
-            FechaDeNac = CreateCustomer.FechaDeNac,
-        };
-
+        var entity =  CreateCustomer.Adapt<Customer>();
         _context.Customers.Add(entity);
         await _context.SaveChangesAsync();
-
         return entity.Adapt<CustomerDTO>(); ;
     }
 
     public async Task<CustomerDTO> UpdateCustomer(UpdateCustomerDTO UpdateCustomer)
     {
-        var entity = await VerifyExists(UpdateCustomer.Id);
-
-        entity.FirstName = UpdateCustomer.FirstName;
-        entity.LastName = UpdateCustomer.LastName;
-        entity.Email = UpdateCustomer.Email;
-        entity.Phone = UpdateCustomer.Phone;
-        entity.FechaDeNac = UpdateCustomer.FechaDeNac;
-
-        UpdateCustomer.Adapt<CustomerDTO>();
-
+        var entity = UpdateCustomer.Adapt<Customer>();
+        _context.Customers.Update(entity);
         await _context.SaveChangesAsync();
         return entity.Adapt<CustomerDTO>();
     }
