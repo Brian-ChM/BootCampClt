@@ -3,6 +3,7 @@ using System;
 using Infraestructura.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infraestructura.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241112130458_CardEntity")]
+    partial class CardEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,37 +95,6 @@ namespace Infraestructura.Migrations
                     b.ToTable("Cards");
                 });
 
-            modelBuilder.Entity("Core.Entities.Charge", b =>
-                {
-                    b.Property<int>("ChargeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ChargeId"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("AvailableCredit")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("CardId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("ChargeId");
-
-                    b.HasIndex("CardId");
-
-                    b.ToTable("Charges");
-                });
-
             modelBuilder.Entity("Core.Entities.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -155,33 +127,6 @@ namespace Infraestructura.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("Core.Entities.Payment", b =>
-                {
-                    b.Property<int>("PaymentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PaymentId"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("AvailableCredit")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("CardId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("PaymentId");
-
-                    b.HasIndex("CardId");
-
-                    b.ToTable("Payments");
-                });
-
             modelBuilder.Entity("Core.Entities.Account", b =>
                 {
                     b.HasOne("Core.Entities.Customer", "Customer")
@@ -202,35 +147,6 @@ namespace Infraestructura.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("Core.Entities.Charge", b =>
-                {
-                    b.HasOne("Core.Entities.Card", "Card")
-                        .WithMany("Charges")
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Card");
-                });
-
-            modelBuilder.Entity("Core.Entities.Payment", b =>
-                {
-                    b.HasOne("Core.Entities.Card", "Card")
-                        .WithMany("Payments")
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Card");
-                });
-
-            modelBuilder.Entity("Core.Entities.Card", b =>
-                {
-                    b.Navigation("Charges");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Core.Entities.Customer", b =>

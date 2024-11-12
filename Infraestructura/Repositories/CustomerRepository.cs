@@ -1,4 +1,5 @@
-﻿using Core.DTOs;
+﻿using Core.DTOs.Card;
+using Core.DTOs.Customer;
 using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Request;
@@ -37,16 +38,15 @@ public class CustomerRepository : ICustomerRepository
 
     public async Task<CustomerDTO> AddCustomer(CreateCustomerDTO CreateCustomer)
     {
-        var entity =  CreateCustomer.Adapt<Customer>();
+        var entity = CreateCustomer.Adapt<Customer>();
         _context.Customers.Add(entity);
         await _context.SaveChangesAsync();
-        return entity.Adapt<CustomerDTO>(); ;
+        return entity.Adapt<CustomerDTO>();
     }
 
     public async Task<CustomerDTO> UpdateCustomer(UpdateCustomerDTO UpdateCustomer)
     {
         var entity = await VerifyExists(UpdateCustomer.Id);
-
 
         UpdateCustomer.Adapt(entity);
         _context.Customers.Update(entity);
@@ -64,10 +64,16 @@ public class CustomerRepository : ICustomerRepository
         return entity.Adapt<CustomerDTO>();
     }
 
+    public async Task<List<CardCustomerDTO>> GetCardsByCustomer(int Id)
+    {
+        var entity = await _context.Customers.Include(c => c.Cards).FirstOrDefaultAsync(c => c.Id == Id) ??
+            throw new Exception("No hay tarjetas para el usuario solicitado o el usuario no existe.");
+        return entity.Cards.Adapt<List<CardCustomerDTO>>();
+    }
+
     private async Task<Customer> VerifyExists(int id)
     {
         return await _context.Customers.Include(c => c.Accounts).FirstOrDefaultAsync(c => c.Id == id) ??
             throw new Exception("No se encontró con el id solicitado");
     }
-
 }

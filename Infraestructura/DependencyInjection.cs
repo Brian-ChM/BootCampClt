@@ -5,11 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
-using Core.DTOs;
 using Infraestructura.Validation;
 using Mapster;
 using System.Reflection;
 using MapsterMapper;
+using Core.DTOs.Customer;
 
 namespace Infraestructura;
 
@@ -32,6 +32,7 @@ public static class DependencyInjection
     {
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<ICardRepository, CardRepository>();
 
         return services;
     }

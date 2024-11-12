@@ -1,4 +1,4 @@
-﻿using Core.DTOs;
+﻿using Core.DTOs.Account;
 using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Request;

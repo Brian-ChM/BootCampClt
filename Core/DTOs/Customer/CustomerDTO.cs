@@ -1,4 +1,6 @@
-﻿namespace Core.DTOs;
+﻿using Core.DTOs.Account;
+
+namespace Core.DTOs.Customer;
 
 public class CustomerDTO
 {

@@ -1,4 +1,5 @@
-﻿using Core.DTOs;
+﻿using Core.DTOs.Account;
+using Core.DTOs.Customer;
 using Core.Entities;
 using Mapster;
 
@@ -17,10 +18,10 @@ public class CustomerMappingConfiguration : IRegister
             .Map(dest => dest.Accounts, src => src.Accounts.Select(x => x.Adapt<CustomerAccountDetailedDTO>()));
 
         config.NewConfig<Account, CustomerAccountDetailedDTO>()
-        .Map(dest => dest.Id, src => src.Id)
-        .Map(dest => dest.Balance, src => src.Balance)
-        .Map(dest => dest.Number, src => src.Number)
-        .Map(dest => dest.OpeningDate, src => src.OpeningDate.ToShortDateString());
+            .Map(dest => dest.Id, src => src.Id)
+            .Map(dest => dest.Balance, src => src.Balance)
+            .Map(dest => dest.Number, src => src.Number)
+            .Map(dest => dest.OpeningDate, src => src.OpeningDate.ToShortDateString());
 
         config.NewConfig<UpdateCustomerDTO, Customer>()
             .Map(dest => dest.FirstName, src => src.FirstName)

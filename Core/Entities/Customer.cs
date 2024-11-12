@@ -11,4 +11,5 @@ public class Customer
 
     // Relations
     public List<Account> Accounts { get; set; } = [];
+    public List<Card> Cards { get; set; } = [];
 }

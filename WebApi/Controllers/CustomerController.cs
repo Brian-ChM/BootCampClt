@@ -1,4 +1,4 @@
-﻿using Core.DTOs;
+﻿using Core.DTOs.Customer;
 using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Request;
@@ -29,7 +29,7 @@ public class CustomerController : BaseApiController
 
     // Obtener por Id
     [HttpGet("list/{Id}")]
-    public async Task<IActionResult> GetById(int Id)
+    public async Task<IActionResult> GetById([FromRoute] int Id)
     {
         var customerById = await _customerRepository.GetById(Id);
         return Ok(customerById);
@@ -78,5 +78,12 @@ public class CustomerController : BaseApiController
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    // Obtener cards por el Id del customer
+    [HttpGet("{Id}/cards")]
+    public async Task<IActionResult> GetCardsByCustomer([FromRoute] int Id)
+    {
+        return Ok(await _customerRepository.GetCardsByCustomer(Id));
     }
 }
