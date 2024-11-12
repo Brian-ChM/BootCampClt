@@ -56,13 +56,9 @@ public class CustomerRepository : ICustomerRepository
     {
         var entity = await VerifyExists(UpdateCustomer.Id);
 
-        entity.FirstName = UpdateCustomer.FirstName;
-        entity.LastName = UpdateCustomer.LastName;
-        entity.Email = UpdateCustomer.Email;
-        entity.Phone = UpdateCustomer.Phone;
-        entity.FechaDeNac = UpdateCustomer.FechaDeNac;
 
-        UpdateCustomer.Adapt<CustomerDTO>();
+        UpdateCustomer.Adapt(entity);
+        _context.Customers.Update(entity);
 
         await _context.SaveChangesAsync();
         return entity.Adapt<CustomerDTO>();
