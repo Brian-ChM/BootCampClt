@@ -28,5 +28,12 @@ public class CustomerMappingConfiguration : IRegister
             .Map(dest => dest.Email, src => src.Email)
             .Map(dest => dest.Phone, src => src.Phone)
             .Map(dest => dest.FechaDeNac, src => src.FechaDeNac);
+
+        config.NewConfig<CreateCustomerDTO, Customer>()
+            .Map(dest => dest.FirstName, src => src.FirstName)
+            .Map(dest => dest.LastName, src => src.LastName)
+            .Map(dest => dest.Email, src => src.Email)
+            .Map(dest => dest.Phone, src => src.Phone)
+            .Map(dest => dest.FechaDeNac, src => src.FechaDeNac);
     }
 }

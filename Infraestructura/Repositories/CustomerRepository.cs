@@ -37,18 +37,9 @@ public class CustomerRepository : ICustomerRepository
 
     public async Task<CustomerDTO> AddCustomer(CreateCustomerDTO CreateCustomer)
     {
-        var entity = new Customer
-        {
-            FirstName = CreateCustomer.FirstName,
-            LastName = CreateCustomer.LastName,
-            Email = CreateCustomer.Email,
-            Phone = CreateCustomer.Phone,
-            FechaDeNac = CreateCustomer.FechaDeNac,
-        };
-
+        var entity =  CreateCustomer.Adapt<Customer>();
         _context.Customers.Add(entity);
         await _context.SaveChangesAsync();
-
         return entity.Adapt<CustomerDTO>(); ;
     }
 
@@ -59,7 +50,6 @@ public class CustomerRepository : ICustomerRepository
 
         UpdateCustomer.Adapt(entity);
         _context.Customers.Update(entity);
-
         await _context.SaveChangesAsync();
         return entity.Adapt<CustomerDTO>();
     }
