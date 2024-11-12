@@ -45,7 +45,10 @@ public class CustomerRepository : ICustomerRepository
 
     public async Task<CustomerDTO> UpdateCustomer(UpdateCustomerDTO UpdateCustomer)
     {
-        var entity = UpdateCustomer.Adapt<Customer>();
+        var entity = await VerifyExists(UpdateCustomer.Id);
+
+
+        UpdateCustomer.Adapt(entity);
         _context.Customers.Update(entity);
         await _context.SaveChangesAsync();
         return entity.Adapt<CustomerDTO>();
