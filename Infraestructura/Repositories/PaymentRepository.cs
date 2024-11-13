@@ -26,6 +26,8 @@ public class PaymentRepository : IPaymentRepository
             : throw new Exception($"El monto supera el limite de crédito. Le queda por pagar {Card.CreditLimit - Card.AvailableCredit}");
 
         var AddPayment = payment.Adapt<Payment>();
+        AddPayment.CardId = CardId;
+        AddPayment.AvailableCredit = NewAvailableCredit;
 
         Card.AvailableCredit = NewAvailableCredit;
 
@@ -33,6 +35,5 @@ public class PaymentRepository : IPaymentRepository
         await _context.SaveChangesAsync();
 
         return AddPayment.Adapt<PaymentDTO>();
-
     }
 }
