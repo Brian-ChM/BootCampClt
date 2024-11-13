@@ -55,29 +55,15 @@ public class CustomerController : BaseApiController
         if (!results.IsValid)
             return BadRequest(results.Errors);
 
-        try
-        {
-            var updateCustomer = await _customerRepository.UpdateCustomer(UpdateCustomer);
-            return Ok(updateCustomer);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var updateCustomer = await _customerRepository.UpdateCustomer(UpdateCustomer);
+        return Ok(updateCustomer);
     }
 
     // Eliminar
     [HttpDelete("borrar/{Id}")]
     public async Task<IActionResult> Delete([FromRoute] int Id)
     {
-        try
-        {
-            return Ok(await _customerRepository.DeleteCustomer(Id));
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return Ok(await _customerRepository.DeleteCustomer(Id));
     }
 
     // Obtener cards por el Id del customer

@@ -11,7 +11,6 @@ public partial class ApplicationDbContext : DbContext
     public DbSet<Charge> Charges { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<Card> Cards { get; set; }
-
     public ApplicationDbContext() { }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
@@ -21,6 +20,8 @@ public partial class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new CustomerConfiguration());
         modelBuilder.ApplyConfiguration(new AccountConfiguration());
         modelBuilder.ApplyConfiguration(new CardConfiguration());
+        modelBuilder.ApplyConfiguration(new ChargeConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentConfiguration());
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

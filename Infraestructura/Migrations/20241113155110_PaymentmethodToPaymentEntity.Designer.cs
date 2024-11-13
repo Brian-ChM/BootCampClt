@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infraestructura.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241112172600_ChargeEntityAndPaymentEntity")]
-    partial class ChargeEntityAndPaymentEntity
+    [Migration("20241113155110_PaymentmethodToPaymentEntity")]
+    partial class PaymentmethodToPaymentEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -177,6 +177,10 @@ namespace Infraestructura.Migrations
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("PaymentId");
 

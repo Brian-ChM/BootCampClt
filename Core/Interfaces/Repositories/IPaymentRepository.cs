@@ -4,5 +4,5 @@ namespace Core.Interfaces.Repositories;
 
 public interface IPaymentRepository
 {
-    Task<List<PaymentDTO>> GetPayments(int Id);
+    Task<PaymentDTO> AddPayments(int CardId, CreatePaymentDTO payment);
 }

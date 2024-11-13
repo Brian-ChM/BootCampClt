@@ -15,13 +15,13 @@ public class CardRepository : ICardRepository
         _context = context;
     }
 
-    public async Task<CardDTO> Add(CreateCardDTO card)
+    public async Task<ResponseCardDto> Add(CreateCardDTO card)
     {
         var entity = card.Adapt<Card>();
         _context.Cards.Add(entity);
 
         await _context.SaveChangesAsync();
-        return entity.Adapt<CardDTO>();
+        return entity.Adapt<ResponseCardDto>();
     }
 
     public async Task<DetailedCardDTO> GetById(int Id)
@@ -29,7 +29,6 @@ public class CardRepository : ICardRepository
         var entity = await VerifyExists(Id);
         return entity.Adapt<DetailedCardDTO>();
     }
-
 
     private async Task<Card> VerifyExists(int Id)
     {
