@@ -1,5 +1,6 @@
 ﻿using Core.DTOs.Transactions;
 using Core.Interfaces.Repositories;
+using Core.Request;
 using Infraestructura.Context;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ public class TransactionRepository : ITransactionRepository
         _context = context;
     }
 
-    public async Task<List<TransactionDTO>> GetTransaction(int CardId)
+    public async Task<List<TransactionDTO>> GetTransaction(int CardId, DateRequest date)
     {
 
         var transactions = await _context.Cards
@@ -37,10 +38,16 @@ public class TransactionRepository : ITransactionRepository
             Type = "Charge",
             Amount = c.Amount,
             Date = c.Date,
-            Description= c.Description,
+            Description = c.Description,
         }).ToList();
 
+
+        var start = date.Start.ToDateTime(TimeOnly.MinValue);
+        var end = date.End.ToDateTime(TimeOnly.MaxValue);
+
         return payments.Concat(charges)
-            .OrderByDescending(res => res.Date).ToList();
+            .OrderByDescending(res => res.Date)
+            .Where(x => x.Date >= start && x.Date <= end)
+            .ToList();
     }
 }

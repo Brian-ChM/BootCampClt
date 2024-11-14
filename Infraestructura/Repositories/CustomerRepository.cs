@@ -68,6 +68,7 @@ public class CustomerRepository : ICustomerRepository
     {
         var entity = await _context.Customers.Include(c => c.Cards).FirstOrDefaultAsync(c => c.Id == Id) ??
             throw new Exception("No hay tarjetas para el usuario solicitado o el usuario no existe.");
+
         return entity.Cards.Adapt<List<CardCustomerDTO>>();
     }
 

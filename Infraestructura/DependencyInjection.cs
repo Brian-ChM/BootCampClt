@@ -10,19 +10,21 @@ using Mapster;
 using System.Reflection;
 using MapsterMapper;
 using Core.DTOs.Customer;
+using Core.Interfaces.Services;
+using Infraestructura.Services;
 
 namespace Infraestructura;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure
+        (this IServiceCollection services, IConfiguration configuration)
     {
         services.AddRepositories();
         services.AddDatabase(configuration);
         services.AddValidation();
         services.AddMapping();
+        services.AddServices();
 
         return services;
     }
@@ -41,8 +43,7 @@ public static class DependencyInjection
     }
 
     public static IServiceCollection AddDatabase
-        (this IServiceCollection services,
-        IConfiguration configuration)
+        (this IServiceCollection services, IConfiguration configuration)
     {
         var connectionStrings = configuration.GetConnectionString("connection");
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -67,6 +68,12 @@ public static class DependencyInjection
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
 
+        return services;
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<ICardService, CardService>();
         return services;
     }
 }

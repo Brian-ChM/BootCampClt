@@ -15,7 +15,7 @@ public class CardRepository : ICardRepository
         _context = context;
     }
 
-    public async Task<ResponseCardDto> Add(CreateCardDTO card)
+    public async Task<ResponseCardDto> AddCard(CreateCardDTO card)
     {
         var entity = card.Adapt<Card>();
         _context.Cards.Add(entity);
@@ -35,5 +35,4 @@ public class CardRepository : ICardRepository
         return await _context.Cards.FindAsync(Id) ??
             throw new Exception("No encontró la tarjeta con el Id solicitado.");
     }
-
 }

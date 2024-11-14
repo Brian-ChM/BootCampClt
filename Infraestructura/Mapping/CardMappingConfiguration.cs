@@ -1,4 +1,5 @@
 ﻿using Core.DTOs.Card;
+using Core.DTOs.Charges;
 using Core.DTOs.Transactions;
 using Core.Entities;
 using Mapster;
@@ -30,7 +31,7 @@ public class CardMappingConfiguration : IRegister
         config.NewConfig<Card, DetailedCardDTO>()
             .Map(dest => dest.CardId, src => src.CardId)
             .Map(dest => dest.CustomerId, src => src.CustomerId)
-            .Map(dest => dest.CardNumber, src => $"XXXX-XXXX-XXXX-{src.CardNumber.Substring(src.CardNumber.Length - 4),4}")
+            .Map(dest => dest.CardNumber, src => $"XXXX-XXXX-XXXX-{src.CardNumber.Substring(src.CardNumber.Length - 4, 4)}")
             .Map(dest => dest.ExpirationDate, src => src.ExpirationDate)
             .Map(dest => dest.Status, src => src.Status)
             .Map(dest => dest.CreditLimit, src => src.CreditLimit)
@@ -47,9 +48,14 @@ public class CardMappingConfiguration : IRegister
         config.NewConfig<Card, ResponseCardDto>()
             .Map(dest => dest.CardId, src => src.CardId)
             .Map(dest => dest.CustomerId, src => src.CustomerId)
-            .Map(dest => dest.CardNumber, src => $"XXXX-XXXX-XXXX-{src.CardNumber.Substring(src.CardNumber.Length - 4), 4}")
+            .Map(dest => dest.CardNumber, src => $"XXXX-XXXX-XXXX-{src.CardNumber.Substring(src.CardNumber.Length - 4, 4)}")
             .Map(dest => dest.ExpirationDate, src => src.ExpirationDate)
             .Map(dest => dest.Status, src => src.Status);
+
+        config.NewConfig<CreateChargeDTO, Charge>()
+            .Map(dest => dest.Amount, src => src.Amount)
+            .Map(dest => dest.Description, src => src.Description)
+            .Map(dest => dest.Date, src => src.Date);
     }
 
     public static string GetCardNumber()

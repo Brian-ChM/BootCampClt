@@ -17,27 +17,26 @@ public class ChargeRepository : IChargeRepository
 
     public async Task<ChargeDTO> AddCharges(int CardId, CreateChargeDTO charge)
     {
-        var Card = await _context.Cards.FindAsync(CardId) ??
-            throw new Exception("El Id de la tarjeta no es valido.");
+        var Card = await _context.Cards.FindAsync(CardId);
 
-        var NewAvailableCredit = Card.AvailableCredit >= charge.Amount
-            ? Card.AvailableCredit - charge.Amount
-            : throw new Exception("El monto supera el limite de crédito.");
+        var AddCharge = charge.Adapt<Charge>();
+        AddCharge.CardId = CardId;
+        AddCharge.AvailableCredit = Card!.AvailableCredit - charge.Amount;
 
-        var AddCard = new Charge
-        {
-            CardId = CardId,
-            Amount = charge.Amount,
-            AvailableCredit = NewAvailableCredit,
-            Description = charge.Description,
-            Date = charge.Date,
-        };
-
-        Card.AvailableCredit = NewAvailableCredit;
-
-        _context.Charges.Add(AddCard);
+        Card.AvailableCredit -= charge.Amount;
+        _context.Charges.Add(AddCharge);
         await _context.SaveChangesAsync();
 
-        return AddCard.Adapt<ChargeDTO>();
+        return AddCharge.Adapt<ChargeDTO>();
+    }
+
+    public async Task<bool> VerifyChargeAmount(int cardId, decimal amount)
+    {
+        var card = await _context.Cards.FindAsync(cardId);
+
+        if (card is null)
+            throw new Exception("No se encontró la tarjeta con el id provisto");
+
+        return card.AvailableCredit >= amount;
     }
 }

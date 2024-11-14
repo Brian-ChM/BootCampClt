@@ -18,22 +18,26 @@ public class PaymentRepository : IPaymentRepository
 
     public async Task<PaymentDTO> AddPayments(int CardId, CreatePaymentDTO payment)
     {
-        var Card = await _context.Cards.FindAsync(CardId) ??
-            throw new Exception("El Id de la tarjeta no es valido.");
-
-        var NewAvailableCredit = Card.CreditLimit >= (Card.AvailableCredit + payment.Amount)
-            ? Card.AvailableCredit + payment.Amount
-            : throw new Exception($"El monto supera el limite de crédito. Le queda por pagar {Card.CreditLimit - Card.AvailableCredit}");
+        var Card = await _context.Cards.FindAsync(CardId);
 
         var AddPayment = payment.Adapt<Payment>();
         AddPayment.CardId = CardId;
-        AddPayment.AvailableCredit = NewAvailableCredit;
+        AddPayment.AvailableCredit = Card!.AvailableCredit + payment.Amount;
 
-        Card.AvailableCredit = NewAvailableCredit;
-
+        Card.AvailableCredit += payment.Amount;
         _context.Payments.Add(AddPayment);
         await _context.SaveChangesAsync();
 
         return AddPayment.Adapt<PaymentDTO>();
+    }
+
+    public async Task<bool> VerifyPaymentAmount(int cardId, decimal amount)
+    {
+        var card = await _context.Cards.FindAsync(cardId);
+
+        if (card is null)
+            throw new Exception("No se encontró la tarjeta con el id provisto");
+
+        return card.CreditLimit >= (card.AvailableCredit + amount);
     }
 }
