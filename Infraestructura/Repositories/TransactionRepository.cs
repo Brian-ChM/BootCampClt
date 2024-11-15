@@ -18,6 +18,8 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<List<TransactionDTO>> GetTransaction(int CardId, DateRequest date)
     {
+        var start = date.Start.ToDateTime(TimeOnly.MinValue);
+        var end = date.End.ToDateTime(TimeOnly.MaxValue);
 
         var transactions = await _context.Cards
             .Include(c => c.Payments)
@@ -25,25 +27,8 @@ public class TransactionRepository : ITransactionRepository
             .FirstOrDefaultAsync(c => c.CardId.Equals(CardId))
             ?? throw new Exception("No se encuentra con el CardId solicitado.");
 
-        var payments = transactions.Payments.Select(p => new TransactionDTO
-        {
-            Type = "Payment",
-            Amount = p.Amount,
-            Date = p.Date,
-            Description = "Pago recibido"
-        }).ToList();
-
-        var charges = transactions.Charges.Select(c => new TransactionDTO
-        {
-            Type = "Charge",
-            Amount = c.Amount,
-            Date = c.Date,
-            Description = c.Description,
-        }).ToList();
-
-
-        var start = date.Start.ToDateTime(TimeOnly.MinValue);
-        var end = date.End.ToDateTime(TimeOnly.MaxValue);
+        var payments = transactions.Payments.Select(p => p.Adapt<TransactionDTO>()).ToList();
+        var charges = transactions.Charges.Select(c => c.Adapt<TransactionDTO>()).ToList();
 
         return payments.Concat(charges)
             .OrderByDescending(res => res.Date)

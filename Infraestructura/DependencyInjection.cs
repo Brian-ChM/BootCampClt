@@ -29,7 +29,6 @@ public static class DependencyInjection
         return services;
     }
 
-
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -38,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IChargeRepository, ChargeRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<IEntityRepository, EntityRepository>();
 
         return services;
     }
@@ -74,6 +74,7 @@ public static class DependencyInjection
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<ICardService, CardService>();
+        services.AddScoped<ICustomerService, CustomerService>();
         return services;
     }
 }

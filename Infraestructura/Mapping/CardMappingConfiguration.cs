@@ -12,31 +12,12 @@ public class CardMappingConfiguration : IRegister
     public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<CreateCardDTO, Card>()
-            .Map(dest => dest.CustomerId, src => src.CustomerId)
-            .Map(dest => dest.CardType, src => src.CardType)
             .Map(dest => dest.CardNumber, src => GetCardNumber())
-            .Map(dest => dest.ExpirationDate, src => src.ExpirationDate)
-            .Map(dest => dest.CreditLimit, src => src.CreditLimit)
             .Map(dest => dest.AvailableCredit, src => new Random().Next(0, (int)src.CreditLimit))
-            .Map(dest => dest.Status, src => "active")
-            .Map(dest => dest.InterestRate, src => src.InterestRate);
-
-        config.NewConfig<CardDTO, Card>()
-            .Map(dest => dest.CardId, src => src.CardId)
-            .Map(dest => dest.CustomerId, src => src.CustomerId)
-            .Map(dest => dest.CardNumber, src => src.CardNumber)
-            .Map(dest => dest.ExpirationDate, src => src.ExpirationDate)
-            .Map(dest => dest.Status, src => src.Status);
+            .Map(dest => dest.Status, src => "active");
 
         config.NewConfig<Card, DetailedCardDTO>()
-            .Map(dest => dest.CardId, src => src.CardId)
-            .Map(dest => dest.CustomerId, src => src.CustomerId)
-            .Map(dest => dest.CardNumber, src => $"XXXX-XXXX-XXXX-{src.CardNumber.Substring(src.CardNumber.Length - 4, 4)}")
-            .Map(dest => dest.ExpirationDate, src => src.ExpirationDate)
-            .Map(dest => dest.Status, src => src.Status)
-            .Map(dest => dest.CreditLimit, src => src.CreditLimit)
-            .Map(dest => dest.AvailableCredit, src => src.AvailableCredit)
-            .Map(dest => dest.InterestRate, src => src.InterestRate);
+            .Map(dest => dest.CardNumber, src => $"XXXX-XXXX-XXXX-{src.CardNumber.Substring(src.CardNumber.Length - 4, 4)}");
 
         config.NewConfig<Customer, CardCustomerDTO>()
             .Map(dest => dest.CardId, src => src.Cards.Select(x => x.CardId))
@@ -46,16 +27,7 @@ public class CardMappingConfiguration : IRegister
             .Map(dest => dest.ExpirationDate, src => src.Cards.Select(x => x.ExpirationDate));
 
         config.NewConfig<Card, ResponseCardDto>()
-            .Map(dest => dest.CardId, src => src.CardId)
-            .Map(dest => dest.CustomerId, src => src.CustomerId)
-            .Map(dest => dest.CardNumber, src => $"XXXX-XXXX-XXXX-{src.CardNumber.Substring(src.CardNumber.Length - 4, 4)}")
-            .Map(dest => dest.ExpirationDate, src => src.ExpirationDate)
-            .Map(dest => dest.Status, src => src.Status);
-
-        config.NewConfig<CreateChargeDTO, Charge>()
-            .Map(dest => dest.Amount, src => src.Amount)
-            .Map(dest => dest.Description, src => src.Description)
-            .Map(dest => dest.Date, src => src.Date);
+            .Map(dest => dest.CardNumber, src => $"XXXX-XXXX-XXXX-{src.CardNumber.Substring(src.CardNumber.Length - 4, 4)}");
     }
 
     public static string GetCardNumber()

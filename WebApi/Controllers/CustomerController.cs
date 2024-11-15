@@ -1,6 +1,8 @@
 ﻿using Core.DTOs.Customer;
+using Core.DTOs.Entity;
 using Core.Entities;
 using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Core.Request;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +14,20 @@ public class CustomerController : BaseApiController
     private readonly ICustomerRepository _customerRepository;
     private readonly IValidator<CreateCustomerDTO> _validateCreate;
     private readonly IValidator<UpdateCustomerDTO> _validateUpdate;
+    private readonly ICustomerService _customerService;
 
-    public CustomerController(ICustomerRepository customerRepository, IValidator<CreateCustomerDTO> validateCreate, IValidator<UpdateCustomerDTO> validateUpdate)
+    public CustomerController
+        (
+        ICustomerRepository customerRepository,
+        IValidator<CreateCustomerDTO> validateCreate,
+        IValidator<UpdateCustomerDTO> validateUpdate,
+        ICustomerService customerService
+        )
     {
         _customerRepository = customerRepository;
         _validateCreate = validateCreate;
         _validateUpdate = validateUpdate;
+        _customerService = customerService;
     }
 
     // Obtener todos
@@ -71,5 +81,20 @@ public class CustomerController : BaseApiController
     public async Task<IActionResult> GetCardsByCustomer([FromRoute] int Id)
     {
         return Ok(await _customerRepository.GetCardsByCustomer(Id));
+    }
+
+
+    // Agregar Entidades por Customer ID
+    [HttpPost("{CustomerId}/entities")]
+    public async Task<IActionResult> AddEntity([FromBody] CreateEntityDTO entity)
+    {
+        return Ok(await _customerService.CreateEntity(entity));
+    }
+
+    // Obtener Entidades por Customer ID
+    [HttpGet("{CustomerId}/entities")]
+    public async Task<IActionResult> GetEntity([FromRoute] int CustomerId)
+    {
+        return Ok(await _customerService.GetEntities(CustomerId));
     }
 }
