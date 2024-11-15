@@ -25,9 +25,9 @@ public class EntityRepository : IEntityRepository
     public async Task<List<ResponseEntityDTO>> GetEntities(int CustomerId)
     {
         var entitiesWithProducts = await _context.CustomerEntities
-            .Where(e => e.CustomerId == CustomerId) 
             .Include(e => e.Entity)
                 .ThenInclude(e => e.Products)
+            .Where(e => e.CustomerId == CustomerId) 
             .Select(e => e.Entity)
             .ToListAsync();
 
